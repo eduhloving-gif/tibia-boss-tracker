@@ -1,1 +1,102 @@
 
+<!DOCTYPE html>
+<html>
+<head>
+
+<title>Tibia Boss Tracker</title>
+
+<style>
+
+body{
+font-family:Arial;
+background:#111;
+color:white;
+text-align:center;
+}
+
+.card{
+background:#222;
+margin:10px;
+padding:20px;
+border-radius:10px;
+display:inline-block;
+width:220px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<h1>Tibia Boss Tracker</h1>
+
+<select id="world">
+
+<option>Gentebra</option>
+<option>Antica</option>
+<option>Belobra</option>
+<option>Wintera</option>
+
+</select>
+
+<div id="bosses"></div>
+
+<script>
+
+async function load(){
+
+const world=document.getElementById("world").value;
+
+const res=await fetch("/api/bosses");
+
+const data=await res.json();
+
+const container=document.getElementById("bosses");
+
+container.innerHTML="";
+
+Object.keys(data).forEach(boss=>{
+
+if(data[boss][world]){
+
+const last=data[boss][world].lastSeen;
+
+const days=Math.floor(
+(Math.abs(new Date()-new Date(last)))/86400000
+);
+
+const chance=Math.min(100,Math.floor(days*0.7));
+
+container.innerHTML+=`
+
+<div class="card">
+
+<h2>${boss}</h2>
+
+<p>Last seen</p>
+
+<b>${last}</b>
+
+<p>Chance</p>
+
+<h2>${chance}%</h2>
+
+</div>
+
+`;
+
+}
+
+})
+
+}
+
+document.getElementById("world").onchange=load;
+
+load();
+
+</script>
+
+</body>
+</html>
